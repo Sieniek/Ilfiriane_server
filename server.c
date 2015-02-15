@@ -1,9 +1,3 @@
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,21 +11,21 @@
 
 #include "data.h"
 
-#define SERVER_PORT 1234
 #define QUEUE_SIZE 5
-#define PI 3.1415
 
 #define OBJECTS_COUNT 73
 #define BUFSIZE 35
 char bufor[BUFSIZE];
 
-float distance(float x1, float y1, float x2, float y2){
-	return sqrt(powf(x1 - x2, 2.0) + powf(y1 - y2, 2.0));
-}
-
 int main(int argc, char* argv[]){
-   	int nSocket, nClientSocket;
-   	int nBind, nListen;
+	int port = 12345;
+	if( argc > 1) port = atoi(argv[1]);
+	
+	
+    int nSocket;
+	int nClientSocket;
+   	int nBind;
+	int nListen;
    	int nFoo = 1;
    	socklen_t nTmp;
    	struct sockaddr_in stAddr, stClientAddr;
@@ -41,7 +35,7 @@ int main(int argc, char* argv[]){
    	memset(&stAddr, 0, sizeof(struct sockaddr));
    	stAddr.sin_family = AF_INET;
    	stAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-   	stAddr.sin_port = htons(SERVER_PORT);
+   	stAddr.sin_port = htons(port);
 
    	/* create a socket */
    	nSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -197,7 +191,7 @@ int main(int argc, char* argv[]){
 		}
 		//printf("OUt\n");
 		for(client_index = 0; client_index < 2; client_index++)
-		for(client = 0; client < 72; client++){
+		for(client = 0; client < 71; client++){
 			//printf("Detekcja\n");
 			if( client == client_index || array[client * 5 + 2] < 1){
 				//printf("cont");
@@ -216,9 +210,7 @@ int main(int argc, char* argv[]){
 					array[client * 5 + 2] = sqrt(client_v * (1-scale) / M_PI);
 					float player_v = powf(array[client_index * 5 + 2], 2.0) * M_PI + client_v * scale;
 					array[client_index * 5 + 2] = sqrt(player_v / M_PI);
-				}
-				//
-				
+				}				
 			} 				
 		}
 
@@ -226,16 +218,12 @@ int main(int argc, char* argv[]){
 		client_id = -1; //mark this msg as readed
         close(nClientSocket);
 		time(&curr_time);
-
-			
-		//printf("%f", difftime(prev_time, curr_time));
-		//printf(" \n");//, difftime(prev_time, curr_time));
 		
 		prev_time = clock();
-
-   }
-   close(nSocket);
-   exit(0);
+		
+    }
+    close(nSocket);
+    exit(0);
 }
 
 
